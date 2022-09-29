@@ -184,3 +184,138 @@ For AOP the following dependency:-
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-aop</artifactId>
 </dependency>
+
+
+
+@Component
+@Aspect
+public class LoggingAspect {
+
+	public static final Log LOGGER = LogFactory.getLog(LoggingAspect.class); 
+
+	
+
+	@AfterThrowing(pointcut = "execution(* com.infosys.service.*Impl.*(..))", throwing = "exception")
+	public void afterThrowing(CustomerException exception) throws CustomerException {
+		LOGGER.error(exception.getMessage(), exception);
+	}
+
+
+-----------------------------------------------------------------------------------------------------------------------
+pom.xml
+
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+---------------------------------------------------------------------------------------------------
+Spring ORM and Spring Data.
+----------------------------------------------------------------------------------------------------------------------------
+he JDBC code involves both Java objects (object model) and SQL queries (relational model).
+
+public class Address{
+private int hno;
+private String streetName;
+}
+public class Employee{
+  private int id;
+  private String name;
+  Address address;
+}
+
+  Employee emp=new Employee();
+  emp.address
+
+
+To handle these problems, a technique called as Object-Relational Mapping (ORM) was introduced. It handles object relational impedance mismatch by providing a way to map Java objects to tables so that object model can be automatically translated to relation model and vice versa, allowing developers to focus only on the object model.
+
+  Object Oriented Approach--------------------ORM-----------------Relational Approach
+                                  (Object Relational Mapping)
+
+
+It resolves object-relational impedance mismatch by mapping
+
+Java classes to tables in the database
+Instance variables to columns of a table
+Objects to rows in the table
+
+
+
+To use ORM in Java applications, Java Persistence API (JPA) specification is used. It has many implementations such as Hibernate, OpenJPA, TopLink, EclipseLink, etc. In this course we will use Hibernate implementation.
+
+
+public interface JPA{}   // Interface gives us specification not the implementation
+
+public class OpenJPA implements JPA{}
+public class TopLink implements JPA{}
+public class Hibernate implements JPA{}
+------------------------------------------------------------------------------------------------------------------------------
+How I can make the implementation of ORM independent of the JavaCode?
+public class JavaCode {
+JPA jpa=new OpenJPA();
+
+
+}
+
+Hibernate,OpenJPA,TopLink are ORM tools/frameworks. These frameworks help us to reduce the 5 mismatches between Object Oriented
+Approach and Relational approach.
+---------------------------------------------------------------------------------------------------------------------------
+ In this course, we will use Hibernate implementation of JPA. Now, let us see how to use JPA for mapping classes with tables.
+-----------------------------------------------------------------------------------------------------------------
+@Entity
+@Table(name="customer")
+public class Customer {
+    @Id
+    @Column(name="customer_id")
+    private Integer customerId;
+    @Transient  // For transient type we dont have corresponding column/data in the table
+    private Integer creditCardNumber;
+}
+-----------------------------------------------------
+
+public class Employee{
+  private int id;
+  private String name;
+
+  public Employee(int id,String name){
+    this.id=id;
+    this.name=name;
+  }
+}
+
+ public class Main{
+    public static void main(String args[]) {
+     Employee emp1=new Employee(1,"Ram");
+     Employee emp2=new Employee(1,"Ram");
+     System.out.println(emp1==emp2);    //false
+     System.out.println(emp1.equals(emp2));  //false
+     System.out.println(emp1.hashCode()); 
+     System.out.println(emp2.hashCode());
+     }
+  }
+
+  // So in the above example equals method is inherited from the object class and equals method of the object class compares
+ // the address that means it works exactly same as ==
+// In the above case hashcode value will be different as the objects are different and hashcode is related with addresses of the
+   objects so as addresses are different so hashcodes are different.
+
+
+As per the java specification if the objects are having the same data , equals should return true and hashCode will be 
+exactly same. But currently in the above code it is not happening. 
+
+So solution is override both equals and hashCode();
+-----------------------------------------------------------------------------------------------------------
+Avoid database tables associated to more than one entity, i.e., one single table in the database should be associated with only one entity
+
+New/Transient State : A newly created entity object which has no persistence context associated with it and having no row associated with it in a table in database is said to be in new or transient state.
+
+Managed/Persistent State : An entity object which has a persistence context and an identifier value associated with it is said to be in managed or persistent state. It may or may not have a row associated with it in a table.
+
+Removed State : An entity object which has a row associated with it in a table and associated with a persistence context, but marked for deletion from the database is said to be in removed state.
+
+Detached State : An entity object which is no longer associated with a persistence context with which it was previously associated with it is said to be in detached state. This usually happens when session gets closed or the object was evicted from the persistence context.
+
+-------------------------------------------------------------------------------------------------------------------------
+
+JPA ORM EntityManager is responsible for managing the objects. 
