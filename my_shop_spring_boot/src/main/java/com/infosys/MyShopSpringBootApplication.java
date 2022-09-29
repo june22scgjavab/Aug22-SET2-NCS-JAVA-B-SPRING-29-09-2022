@@ -3,6 +3,8 @@ package com.infosys;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,7 +16,8 @@ import com.infosys.service.CustomerService;
 
 @SpringBootApplication
 public class MyShopSpringBootApplication implements CommandLineRunner{
-
+	private static final Log LOGGER = LogFactory.getLog(MyShopSpringBootApplication.class);
+	//private final Log LOGGER = LogFactory.getLog(this.getClass());
 	@Autowired
 	private CustomerService customerService;
 	public static void main(String[] args) {
@@ -24,20 +27,18 @@ public class MyShopSpringBootApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		// 1) ADD CUSTOMERS
-				addCustomers();
+			    // addCustomers();
 				// 2) DISPLAY CUSTOMERS
 				displayCustomers();
-
 		
 	}
-
 	private void displayCustomers() {
 		try {
 			List<CustomerDTO> customerList = customerService.displayCustomers();
-			customerList.forEach(customer->System.out.println(customer.getCustomerId()+"\t"+customer.getCustomerName()+"\t"+customer.getMobileNumber()+"\t"+customer.getDateOfBirth()));
+			customerList.forEach(customer->LOGGER.info(customer.getCustomerId()+"\t"+customer.getCustomerName()+"\t"+customer.getMobileNumber()+"\t"+customer.getDateOfBirth()));
 		} catch (CustomerException e) {
 
-			System.out.println(e.getMessage());
+			LOGGER.error(e.getMessage());
 		}
 		
 	}
@@ -48,10 +49,12 @@ public class MyShopSpringBootApplication implements CommandLineRunner{
 		String str;
 		try {
 			str = customerService.addCustomer(customer);
-			System.out.println(str);
-		} catch (CustomerException e) {
-			System.out.println(e.getMessage());
-		}
+			LOGGER.info(str);
+			
+	} catch(Exception exception) {
+		LOGGER.error(exception.getMessage());
+	}
+	
 
 		
 	}

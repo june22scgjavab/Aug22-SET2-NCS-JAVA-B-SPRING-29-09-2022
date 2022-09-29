@@ -30,7 +30,7 @@ public class Validator {
 			errorMessage += "Mobile number should have 10 digits";
 		}
 		if (!validateDob(customer.getDateOfBirth())) {
-			errorMessage += "Mobile number should have 10 digits";
+			errorMessage += "Date of birth should be before current date";
 		}
         if(!errorMessage.isEmpty()) {
         	throw new CustomerException(errorMessage);

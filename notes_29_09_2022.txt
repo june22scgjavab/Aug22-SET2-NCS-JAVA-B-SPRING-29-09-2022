@@ -16,7 +16,7 @@ For that update the pom.xml
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-log4j2</artifactId>
 		</dependency>
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 Just create or copy log4j2.properties file. 
 
 #Name of the Properties file
@@ -50,9 +50,11 @@ appender.console.type=Console
 appender.console.layout.type=PatternLayout
 appender.console.layout.pattern=%d{dd-MMM-yyyy HH:mm:ss} %level - %m%n
 ----------------------------------------------------------------------------------------------------------------------------
-private static final Log LOGGER = LogFactory.getLog(getClass());
+private final Log LOGGER = LogFactory.getLog(this.getClass());
+private  static final Log LOGGER = LogFactory.getLog(Application.class);
 ------------------------------------------------------------------------------------------------------------------------------
-
+LOGGER.info();   ( To print valid details )
+LOGGER.error(); // Exception handler ( in catch block)
 
 Class getClass() is a method of Object class
      
@@ -74,9 +76,111 @@ Class getClass() is a method of Object class
    }
 
 
---------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+While writing a business we have seen multiple layers like Controller,Service,Repository.
+There are some functionality like logging,transaction,security which has to be applied to all
+the layers namely Controller,Service,Repository. So they go horizontally cutting all the layers
+and known as cross cutting concerning. 
 
+Till now we have seen how logger is applied in the Application and Service layer.
+So we can see that in multiple classes we are writing similar code so we can see
+redundancy of same logger related code in multiple layers.
+
+With AOP we can plan in such a way that this cross cutting concern is managed from a single
+class. 
+
+So, it is better to keep all of cross cutting concerns’ code in one place and use it in multiple places wherever required. This is where Aspect Oriented Programming (AOP) kicks in. It provides a way to separate the code of cross-cutting concern(logging,transaction,security ) from business logic code and define them in one place so that it can be reused in all the layers of the application. 
 
 
 
 -------------------------------------------------------------------------------------------------------------------------------------
+So if we are doing AOP programming and keeping the cross cutting concern like logging in a single place how it is 
+achieved by writing the java classes.
+
+  @Aspect
+  @Component
+  public class Logging{
+    
+ @Before("execution(* com.infy.service.*Impl.*(..))")
+   public void before() throws InfyBankException {
+	LOGGER.info("Before advice called.");
+   }
+
+
+
+    execution(<modifiers> <return-type> <fully qualified class name>.<method-name>(parameters))
+    public void method2(){
+     // Log when the exception took place in any of the method
+    }
+
+  }
+
+
+
+  public classs ServiceImpl implements Service {
+
+ 
+    public String addCustomer(CustomerDTO customerDTO){
+  
+    }
+    public List<CustomerDTO> displayCustomers(){}
+
+  }
+
+// the class Logging is an aspect class with the advices like method1 and method2 and this advices
+// can be for the methods addCustomer and displayCustomer().
+
+How the advice will know, that which method it should intercept and Log?
+A This will be done by the Pointcut expression.
+
+
+Aspect is a class that implements the cross-cutting concerns. To declare a class as an aspect it should be annotated with the @Aspect annotation. It should be applied to the class which is annotated with @Component annotation or with derivatives of it.
+
+Join point is a specific point in the application such as method execution, exception handling, changing object variable values, etc during its execution. In Spring AOP a join point is always the execution of a method.
+
+Advice is a method of the aspect class that provides the implementation for the cross-cutting concern. It gets executed at the selected join point(s). The following table shows the different types of advice along with the execution point they have
+
+Before	The advice gets executed before the join-point.
+After Returning    	The advice gets executed after the execution of the join-point finishes.
+After Throwing	The advice gets executed if any exception is thrown from the join-point.
+After (Finally)	The advice gets executed after the execution of the join-point whether it throws an exception or not.
+Around	The advice gets executed around the join-point, which means that it is invoked before the join-point and after the execution of the join-point.
+
+Pointcut represents an expression used to identify join points. It evaluates to the method name before or after which the advice needs to be executed
+
+
+execution(public * *(..))    method return is public
+                            * any return type
+                            * any method
+                            .. any datatype and any number of parameters
+
+
+execution(* service*(..))    * any return type 
+                             service means any method starting with service
+                             * anything after service
+
+execution(* com.infy.service.*.*(..))   * any return type
+                                        com.infy.service
+                                        * Any classes
+                                        * for any methods
+
+
+execution is called as pointcut designator. It tells Spring that join point is the execution of the matching method.
+
+<modifiers> determines the access specifier of the matching method. It could either be public, protected, or private. It is not mandatory.
+
+<return-type> determines the return type of the method in order for a join point to be matched. It is mandatory. If the return type doesn't matter wildcard * is used.
+
+<fully qualified class name> specifies the fully qualified name of the class which has methods on the execution of which advice gets executed. It is optional. You can also use * wildcard as name or part of a name.
+
+<method-name> specifies the name of the method on the execution of which advice gets executed. It is mandatory. You can also use * wildcard as name or part of a name.
+
+parameters are used for matching parameters. To skip parameter filtering, use two dots .. as parameters.
+
+For AOP the following dependency:-
+
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>

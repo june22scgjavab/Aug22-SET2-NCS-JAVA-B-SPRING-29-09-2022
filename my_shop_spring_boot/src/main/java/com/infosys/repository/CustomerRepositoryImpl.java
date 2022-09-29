@@ -1,5 +1,6 @@
 package com.infosys.repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,12 @@ import com.infosys.exception.CustomerException;
 public class CustomerRepositoryImpl implements CustomerRepository {
 	private List<CustomerDTO> customerList = new ArrayList();
 
+	public CustomerRepositoryImpl() {
+		CustomerDTO customerDTO1 = new CustomerDTO("C002", "Suresh Kumar", 9876543291L, LocalDate.of(2000, 10, 15));
+		CustomerDTO customerDTO2 = new CustomerDTO("C003", "Raman Kumar", 9876543291L, LocalDate.of(2000, 10, 15));
+		customerList.add(customerDTO1);
+		customerList.add(customerDTO2);
+	}
 	// We have to add the customers to a List(ArrayList)
 	public String addCustomer(CustomerDTO customer) throws CustomerException {
 
