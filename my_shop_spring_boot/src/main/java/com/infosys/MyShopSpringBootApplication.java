@@ -26,10 +26,10 @@ public class MyShopSpringBootApplication implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		// 1) ADD CUSTOMERS
-			    // addCustomers();
+		// ADD CUSTOMERS
+			     addCustomers();
 				// 2) DISPLAY CUSTOMERS
-				displayCustomers();
+				//displayCustomers();
 		
 	}
 	private void displayCustomers() {
@@ -45,7 +45,7 @@ public class MyShopSpringBootApplication implements CommandLineRunner{
 
 	private void addCustomers() {
 
-		CustomerDTO customer = new CustomerDTO("C001", "Ravi Kumar", 9876543219L, LocalDate.of(2000, 10, 15));
+		CustomerDTO customer = new CustomerDTO("E001", "Ravi Kumar", 9876543219L, LocalDate.of(2000, 10, 15));
 		String str;
 		try {
 			str = customerService.addCustomer(customer);
